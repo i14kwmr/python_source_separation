@@ -267,8 +267,8 @@ np.random.seed(0)
 
 # 畳み込みに用いる音声波形
 clean_wave_files = [
-    "./CMU_ARCTIC/cmu_us_aew_arctic/wav/arctic_a0001.wav",
-    "./CMU_ARCTIC/cmu_us_axb_arctic/wav/arctic_a0002.wav",
+    "../CMU_ARCTIC/cmu_us_aew_arctic/wav/arctic_a0001.wav",
+    "../CMU_ARCTIC/cmu_us_axb_arctic/wav/arctic_a0002.wav",
 ]
 
 # 音源数
