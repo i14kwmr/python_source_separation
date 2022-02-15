@@ -318,7 +318,7 @@ freqs = np.arange(0, Nk, 1) * sample_rate / N
 SNR = 90.0
 
 # 部屋の大きさ
-room_dim = np.r_[10.0, 10.0, 10.0]
+room_dim = np.r_[9.0, 7.0, 4.0]
 
 # マイクロホンアレイを置く部屋の場所
 mic_array_loc = room_dim / 2 + np.random.randn(3) * 0.1
@@ -341,7 +341,7 @@ n_channels = np.shape(mic_alignments)[1]
 # マイクロホンアレイの座標
 R = mic_alignments + mic_array_loc[:, None]
 
-is_use_reverb = False
+is_use_reverb = True
 
 if is_use_reverb == False:
     # 部屋を生成する
@@ -351,12 +351,25 @@ if is_use_reverb == False:
 
 else:
 
-    room = pa.ShoeBox(room_dim, fs=sample_rate, max_order=17, absorption=0.4)
+    rt60 = 0.2
+    e_absorption, max_order = pa.inverse_sabine(rt60, room_dim)
+    room = pa.ShoeBox(
+        room_dim,
+        fs=sample_rate,
+        max_order=max_order,
+        materials=pa.Material(e_absorption),
+    )
     room_no_noise_left = pa.ShoeBox(
-        room_dim, fs=sample_rate, max_order=17, absorption=0.4
+        room_dim,
+        fs=sample_rate,
+        max_order=max_order,
+        materials=pa.Material(e_absorption),
     )
     room_no_noise_right = pa.ShoeBox(
-        room_dim, fs=sample_rate, max_order=17, absorption=0.4
+        room_dim,
+        fs=sample_rate,
+        max_order=max_order,
+        materials=pa.Material(e_absorption),
     )
 
 # 用いるマイクロホンアレイの情報を設定する
