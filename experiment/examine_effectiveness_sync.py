@@ -1,12 +1,16 @@
 # 順列計算に使用
+import argparse
 import time
 
-import pyroomacoustics as pa
 import scipy.signal as sp
 
 from util import *
 from util_bss import *
 from util_sim import *
+
+parser = argparse.ArgumentParser()
+parser.add_argument("sro", type=float, default=0.0)  # 単位はppm
+args = parser.parse_args()
 
 
 def examine_effectiveness_sync():
@@ -56,7 +60,7 @@ def examine_effectiveness_sync():
     ) = simulate(clean_data, sample_rate)
 
     # リサンプリング
-    sro = 62.5 * 1e-6  # 0
+    sro = args.sro * 1e-6  # 0
     multi_conv_data = resample_signals(multi_conv_data, sample_rate, sro)
     multi_conv_data_left_no_noise = resample_signals(
         multi_conv_data_left_no_noise, sample_rate, sro
