@@ -1,12 +1,7 @@
 # 順列計算に使用
-import itertools
 import time
-import wave as wave
 
-import librosa
-import numpy as np
 import pyroomacoustics as pa
-import scipy as scipy
 import scipy.signal as sp
 
 from util import *
