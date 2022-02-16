@@ -3,10 +3,44 @@ import itertools
 import time
 import wave as wave
 
+import librosa
 import numpy as np
 import pyroomacoustics as pa
 import scipy as scipy
 import scipy.signal as sp
+
+
+def resample_signals(conv_data, sro):
+    print(f"sample rate: {sample_rate}")
+    print(f"resample rate: {sample_rate * (1+sro)}")
+
+    max_samples = n_samples
+    _conv_data = []
+    for i in range(n_channels):
+        if i == 0:
+            fs_mic = sample_rate
+        else:
+            fs_mic = sample_rate * (1 + sro)
+
+        resr_data = librosa.resample(
+            conv_data[i, :],
+            sample_rate,
+            fs_mic,
+            res_type="kaiser_best",
+        )
+        _conv_data.append(resr_data)
+
+        if len(resr_data) < max_samples:
+            max_samples = len(resr_data)
+
+    for i in range(n_channels):
+        _conv_data[i] = _conv_data[i][:max_samples]
+
+    conv_data = np.stack(_conv_data, axis=0)  # nsrc x nsamples
+
+    # [TODO] 信号長が短くなる理由の調査．FFTで切り捨てが原因？
+
+    return conv_data
 
 
 # コントラスト関数の微分（球対称多次元ラプラス分布を仮定）
@@ -408,6 +442,20 @@ room_no_noise_right.simulate(snr=90)
 multi_conv_data = room.mic_array.signals
 multi_conv_data_left_no_noise = room_no_noise_left.mic_array.signals
 multi_conv_data_right_no_noise = room_no_noise_right.mic_array.signals
+# print(f"multi_conv_data.shape: {multi_conv_data.shape}")
+# print(f"multi_conv_data_left_no_noise.shape: {multi_conv_data_left_no_noise.shape}")
+# print(f"multi_conv_data_right_no_noise.shape: {multi_conv_data_right_no_noise.shape}")
+
+# リサンプリング
+test_sro = 0
+multi_conv_data = resample_signals(multi_conv_data, test_sro)
+multi_conv_data_left_no_noise = resample_signals(
+    multi_conv_data_left_no_noise, test_sro
+)
+multi_conv_data_right_no_noise = resample_signals(
+    multi_conv_data_right_no_noise, test_sro
+)
+
 
 # 畳み込んだ波形をファイルに書き込む
 write_file_from_time_signal(
