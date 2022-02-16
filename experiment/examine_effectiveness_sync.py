@@ -201,7 +201,7 @@ def examine_effectiveness_sync():
     n_ica_iterations = 50
 
     # ICAの分離フィルタを初期化
-    Wica = np.zeros(shape=(Nk, n_sources, n_sources), dtype=np.complex)
+    Wica = np.zeros(shape=(Nk, n_sources, n_sources), dtype=complex)
 
     Wica = Wica + np.eye(n_sources)[None, ...]
 
